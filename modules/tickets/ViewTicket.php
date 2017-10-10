@@ -20,21 +20,21 @@ function exec_ogp_module()
 
     if (!$ticket->exists($tid, $uid)) {
         print_failure(get_lang('ticket_not_found'));
-        $view->refresh("?m=Tickets");
+        $view->refresh("?m=tickets");
 
         return;
     }
 
     if (!$isAdmin && !$ticket->authorized($_SESSION['user_id'], $tid, $uid)) {
         print_failure(get_lang('ticket_cant_read'));
-        $view->refresh("?m=Tickets");
+        $view->refresh("?m=tickets");
 
         return;
     }
 
     if (!$ticketData) {
         print_failure(get_lang('cant_view_ticket'));
-        $view->refresh("?m=Tickets");
+        $view->refresh("?m=tickets");
 
         return;
     }
@@ -54,23 +54,23 @@ function exec_ogp_module()
                 
                 if (!$reply) {
                     echo ticketErrors(array(get_lang('failed_to_reply')));
-                    $view->refresh("?m=Tickets&p=submitticket", 60);
+                    $view->refresh("?m=tickets&p=submitticket", 60);
                     return;
                 }
 
                 if (isset($_SESSION['ticketReply'])) unset($_SESSION['ticketReply']);
-                $view->refresh("?m=Tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
+                $view->refresh("?m=tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
 
                 return;
             } else {
                 echo ticketErrors($errors);
-                $view->refresh("?m=Tickets&p=viewticket&tid=".$tid."&uid=".$uid, 60);
+                $view->refresh("?m=tickets&p=viewticket&tid=".$tid."&uid=".$uid, 60);
                 return;
             }
 
         } elseif(isset($_POST['ticket_close'])) {
             $ticket->updateStatus($tid, $uid, 0);
-            $view->refresh("?m=Tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
+            $view->refresh("?m=tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
             return;
         }
     }

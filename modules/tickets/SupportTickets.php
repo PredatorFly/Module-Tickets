@@ -27,7 +27,7 @@ function exec_ogp_module()
     echo '<h2>'.get_lang('support_tickets').'</h2>';
 
     echo '<div class="ticketOptionLinks">
-        <a href="?m=Tickets&p=submitticket">'.get_lang('submit_ticket').'</a>
+        <a href="?m=tickets&p=submitticket">'.get_lang('submit_ticket').'</a>
     </div>';
 
     if ($tickets !== false && $ticketCount > 0) {
@@ -40,7 +40,7 @@ function exec_ogp_module()
         
         foreach ($tickets as $t) {
             echo '<tr class="ticketRow '.ticketCodeToName($t['status'], true).'">
-                <td><a href="?m=Tickets&p=viewticket&tid='.$t['tid'].'&uid='.$t['uid'].'">'. htmlentities($t['subject']) .'</a></td>
+                <td><a href="?m=tickets&p=viewticket&tid='.$t['tid'].'&uid='.$t['uid'].'">'. htmlentities($t['subject']) .'</a></td>
                 <td>'. ticketCodeToName($t['status']) .'</a></td>
                 <td>'. $t['last_updated'] .'</a></td>
             </tr>';
@@ -48,7 +48,7 @@ function exec_ogp_module()
 
         echo '</table>';
 
-        echo '<div class="ticketPagination">'.paginationPages($ticketCount, $page, $limit, '?m=Tickets&limit='.$limit.'&page=', 3, 'Tickets').'</div>';
+        echo '<div class="ticketPagination">'.paginationPages($ticketCount, $page, $limit, '?m=tickets&limit='.$limit.'&page=', 3, 'Tickets').'</div>';
     } else {
         if ($ticketCount > 0) {
             echo '<div class="no_tickets">' . get_lang('ticket_invalid_page_num') . '</div>';

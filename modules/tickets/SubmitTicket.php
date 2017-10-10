@@ -43,19 +43,19 @@ function exec_ogp_module()
 
             if (!$open) {
                 echo ticketErrors(array(get_lang('failed_to_open')));
-                $view->refresh("?m=Tickets&p=submitticket", 60);
+                $view->refresh("?m=tickets&p=submitticket", 60);
                 return;
             }
 
             if (isset($_SESSION['ticket'])) {
                 unset($_SESSION['ticket']);
             }
-            $view->refresh("?m=Tickets&p=viewticket&tid=".$open['tid']."&uid=".$open['uid'], 0);
+            $view->refresh("?m=tickets&p=viewticket&tid=".$open['tid']."&uid=".$open['uid'], 0);
 
             return;
         } else {
             echo ticketErrors($errors);
-            $view->refresh("?m=Tickets&p=submitticket", 60);
+            $view->refresh("?m=tickets&p=submitticket", 60);
             return;
         }
     }
