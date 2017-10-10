@@ -1,5 +1,5 @@
 <navigation>
-	<page key="default" file="SupportTickets.php" access="admin,user,subuser" />
-	<page key="submitticket" file="SubmitTicket.php" access="admin,user,subuser" />
-	<page key="viewticket" file="ViewTicket.php" access="admin,user,subuser" />
+	<page key="default" file="supportTickets.php" access="admin,user,subuser" />
+	<page key="submitticket" file="submitTicket.php" access="admin,user,subuser" />
+	<page key="viewticket" file="viewTicket.php" access="admin,user,subuser" />
 </navigation>
