@@ -1,6 +1,6 @@
 <?php
 
-require 'include/Ticket.php';
+require 'include/ticket.php';
 require 'include/functions.php';
 
 function exec_ogp_module()
