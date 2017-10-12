@@ -159,7 +159,7 @@ class Ticket
     {
         $query = "SELECT a.user_id as utid, a.parent_id, b.user_id, b.users_parent
                     FROM OGP_DB_PREFIXtickets a
-                        JOIN ogp_users b
+                        JOIN OGP_DB_PREFIXusers b
                         ON (
                             a.user_id = b.user_id
                             OR a.user_id = b.users_parent
