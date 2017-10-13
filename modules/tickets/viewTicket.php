@@ -76,7 +76,6 @@ function exec_ogp_module()
     }
 
     echo ticketHeader($ticketData);
-    echo ticketReply($ticketData);
     echo '<div class="ticket_ReplyBox status_'.ticketCodeToName($ticketData['status'], true).'">
         <form method="POST">
             <textarea name="reply_content" style="width:100%;" rows="12">'.(isset($_SESSION['ticketReply']) ? $_SESSION['ticketReply'] : '').'</textarea>
@@ -84,7 +83,6 @@ function exec_ogp_module()
             <input type="submit" class="ticket_button" name="ticket_close" value="'. get_lang('ticket_close') . '">
         </form>
     </div>';
-
 
     if (!empty($ticketData['replies'])) {
         echo '<div class="replyContainer">';
@@ -96,4 +94,5 @@ function exec_ogp_module()
         echo '<div class="no_ticket_replies">'.get_lang('no_ticket_replies').'</div>';
     }
 
+    echo ticketReply($ticketData);
 }

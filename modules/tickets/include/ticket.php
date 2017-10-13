@@ -78,7 +78,7 @@ class Ticket
                             JOIN OGP_DB_PREFIXusers b
                                 ON (a.user_id = b.user_id)
                         WHERE a.ticket_id = $tid
-                        ORDER BY a.date DESC";
+                        ORDER BY a.reply_id DESC";
 
         return $this->db->resultQuery($query) ?: array();
     }
