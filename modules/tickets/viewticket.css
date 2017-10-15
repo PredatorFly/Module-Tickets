@@ -151,13 +151,6 @@
 }
 
 .ticket_reply_notice {
-    background-color: #d9edf7;
-    border-color: #bce8f1;
-    color: #31708f;
-    padding: 12px;
-}
-
-.ticket_reply_notice {
     cursor: pointer;
     right: 0;
     text-align: center;
@@ -166,6 +159,7 @@
     color: #31708f;
     padding: 12px;
     font-size: 14px;
+    margin: 8px 0;
 }
 
 .ticket_reply_notice .left, .ticket_reply_notice .center, .ticket_reply_notice .right {
