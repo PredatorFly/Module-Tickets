@@ -15,4 +15,8 @@
 	margin-bottom: 20px;
 }
 
+.ticketListTable th {
+	text-align: left;
+}
+
 .ticketPagination {}

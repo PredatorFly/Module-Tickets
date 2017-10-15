@@ -2,6 +2,8 @@
 
 function ticketHeader($info)
 {
+    $date = new DateTime($info['created_at']);
+
     return '<div class="divTable">
     <div class="divTableBody">
         <div class="divTableRow">
@@ -19,11 +21,11 @@ function ticketHeader($info)
         </div>
         <div class="divTableRow">
             <div class="divTableCell infoblock_ticket">'.get_lang('ticket_submitted').'</div>
-            <div class="divTableCell contentblock_ticket">'.$info['created_at'].'</div>
+            <div class="divTableCell contentblock_ticket">'.$date->format('jS M Y (H:i)').'</div>
         </div>
         <div class="divTableRow">
             <div class="divTableCell infoblock_ticket">'.get_lang('ticket_updated').'</div>
-            <div class="divTableCell contentblock_ticket">'.$info['last_updated'].'</div>
+            <div class="divTableCell contentblock_ticket">'.$date->format('jS M Y (H:i)').'</div>
         </div>
         <div class="divTableRow">
             <div class="divTableCell infoblock_ticket">'.get_lang('ticket_status').'</div>
@@ -43,9 +45,11 @@ function ticketHeader($info)
 function ticketReply($replyData, $loggedInAdmin = false)
 {
     if (!isset($replyData['is_admin'])) {
+        $date = new DateTime($replyData['created_at']);
+
         return '<div class="ticket_reply">
     <div class="date">
-        '.$replyData['created_at'].'
+        '.$date->format('jS M Y (H:i)').'
     </div>
     <div class="user">
         <span class="name">
@@ -60,11 +64,12 @@ function ticketReply($replyData, $loggedInAdmin = false)
     '. ($loggedInAdmin ? '<div class="ticket_footer">'.get_lang('ip') .' '. inet_ntop($replyData['user_ip']) .'</div>' : '') .'
 </div>';
     } else {
+        $date = new DateTime($replyData['date']);
         $class = $replyData['is_admin'] == 1 ? 'admin' : 'user';
 
         return '<div class="ticket_reply '.$class.'">
     <div class="date">
-        '.$replyData['date'].'
+        '.$date->format('jS M Y (H:i)').'
     </div>
     <div class="'.$class.'">
         <span class="name">
@@ -81,7 +86,8 @@ function ticketReply($replyData, $loggedInAdmin = false)
     }
 }
 
-function ticketErrors($errors) {
+function ticketErrors($errors)
+{
     $return = '<div class="ticketErrorHolder">
     <p class="failure">'.(get_lang('ticket_errors_occured') . ':').'</p>
     <ul class="ticketErrorList">';
@@ -94,7 +100,8 @@ function ticketErrors($errors) {
     return $return;
 }
 
-function ticketCodeToName($code, $css = false) {
+function ticketCodeToName($code, $css = false)
+{
     $codes = array(
         'ticket_closed',
         'ticket_open',

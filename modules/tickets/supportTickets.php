@@ -7,13 +7,17 @@ function exec_ogp_module()
 {
     global $db, $loggedInUserInfo;
 
-    if (isset($_SESSION['ticket'])) unset($_SESSION['ticket']);
-    if (isset($_SESSION['ticketReply'])) unset($_SESSION['ticketReply']);
+    if (isset($_SESSION['ticket'])) {
+        unset($_SESSION['ticket']);
+    }
+    if (isset($_SESSION['ticketReply'])) {
+        unset($_SESSION['ticketReply']);
+    }
 
     $page    = (isset($_GET['page']) && (int)$_GET['page'] > 0) ? (int)$_GET['page'] : 1;
     $limit   = (isset($_GET['limit']) && (int)$_GET['limit'] > 0) ? (int)$_GET['limit'] : 10;
 
-    if(!empty($loggedInUserInfo['users_page_limit']) && empty($_GET['limit'])){
+    if (!empty($loggedInUserInfo['users_page_limit']) && empty($_GET['limit'])) {
         $limit = $loggedInUserInfo['users_page_limit'];
     }
 
@@ -39,10 +43,11 @@ function exec_ogp_module()
         echo '</tr>';
         
         foreach ($tickets as $t) {
+            $date = new DateTime($t['last_updated']);
             echo '<tr class="ticketRow '.ticketCodeToName($t['status'], true).'">
                 <td><a href="?m=tickets&p=viewticket&tid='.$t['tid'].'&uid='.$t['uid'].'">'. htmlentities($t['subject']) .'</a></td>
-                <td>'. ticketCodeToName($t['status']) .'</a></td>
-                <td>'. $t['last_updated'] .'</a></td>
+                <td>'. ticketCodeToName($t['status']) .'</td>
+                <td>'. $date->format('jS M Y (H:i)') .'</td>
             </tr>';
         }
 
