@@ -46,8 +46,8 @@ $install_queries[0] = array(
 		`subject` varchar(64) NOT NULL,
 		`message` TEXT NOT NULL,
 		`service_id` int,
-		`created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-		`last_updated` DATETIME DEFAULT CURRENT_TIMESTAMP,
+		`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+		`last_updated` varchar(22) NOT NULL,
 		`status` tinyint NOT NULL,
 		`assigned_to` tinyint,
 		PRIMARY KEY (`tid`)
@@ -59,7 +59,7 @@ $install_queries[0] = array(
 		`user_id` int NOT NULL,
 		`user_ip` varbinary(16) NOT NULL,
 		`message` TEXT NOT NULL,
-		`date` DATETIME DEFAULT CURRENT_TIMESTAMP,
+		`date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		`rating` tinyint DEFAULT '0',
 		`is_admin` int DEFAULT '0',
 		PRIMARY KEY (`reply_id`)

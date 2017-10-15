@@ -107,6 +107,7 @@ class Ticket
 
         $insertId = $this->db->resultInsertId('tickets', $fields);
         if ($insertId !== false) {
+			$this->updateTimestamp($insertId, $uid);
             return array('uid' => $uid, 'tid' => $insertId);
         }
     }
