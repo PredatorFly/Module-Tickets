@@ -90,8 +90,8 @@ function exec_ogp_module()
         echo '<div class="ticket_closed">'.get_lang('ticket_is_closed').'</div>';
 
         echo '<div class="ticket_reply_notice">';
-        echo '<div class="left">'.get_lang('reply').'</div>';
-        echo '<div class="right">+</div>';
+        echo '<div class="left" id="toggleNoticeMessage">'.get_lang('reply').'</div>';
+        echo '<div class="right" id="toggleNoticeIcon">+</div>';
         echo '<div class="clear"></div>';
         echo '</div>';
     }
@@ -119,9 +119,9 @@ function exec_ogp_module()
 <script>
     $(function() {
         $(".ticket_reply_notice").click(function() {
-            var state = ($(".right").text() == "+" ? "-" : "+");
+            var state = ($("#toggleNoticeIcon").text() == "+" ? "-" : "+");
             $(".ticket_ReplyBox").slideToggle(function() {
-                $(".right").text(state);
+                $("#toggleNoticeIcon").text(state);
             });
         });
 
