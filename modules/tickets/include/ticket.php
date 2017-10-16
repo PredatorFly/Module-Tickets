@@ -72,7 +72,7 @@ class Ticket
 
     private function getTicketReplies($tid)
     {
-        $query = "SELECT a.reply_id, a.user_id, a.user_ip, a.message, a.date, a.rating, a.is_admin,
+        $query = "SELECT a.reply_id, a.ticket_id, a.user_id, a.user_ip, a.message, a.date, a.rating, a.is_admin,
                             b.user_id, b.users_login, b.users_role, b.users_fname, b.users_lname, b.users_email, b.users_parent
                         FROM OGP_DB_PREFIXticket_replies a
                             JOIN OGP_DB_PREFIXusers b
@@ -200,8 +200,13 @@ class Ticket
         return $return;
     }
 
-    public function setRating($tid, $uid, $user_id, $reply_id, $rating)
+    public function setRating($tid, $reply_id, $rating)
     {
+        $query = "UPDATE OGP_DB_PREFIXticket_replies
+                    SET rating = ".(int)$rating."
+                    WHERE ticket_id = ".(int)$tid." AND reply_id = ".(int)$reply_id;
+
+        return $this->db->query($query);
     }
 
     public function assignTo($tid, $admin_id)

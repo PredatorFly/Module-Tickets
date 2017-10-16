@@ -122,6 +122,18 @@
     text-align: right;
 }
 
+.ticket_footer .left, .ticket_footer .center, .ticket_footer .right {
+    display: inline-block;
+}
+
+.ticket_footer .left {
+    float: left;
+}
+
+.ticket_footer .right {
+    float: right;
+}
+
 .ticketErrorHolder {
     padding: 6px;
     background-color: pink;
@@ -178,4 +190,42 @@
 
 .clear {
     clear: both;
+}
+
+div.stars {
+    width: 270px;
+    display: inline-block;
+}
+
+input.star { 
+    display: none;
+}
+
+label.star {
+    float: right;
+    color: #444;
+    transition: all .2s;
+    font-size: 16px;
+}
+
+input.star:checked ~ label.star:before {
+    content: '\2605';
+    color: #FD4;
+    transition: all .25s;
+}
+
+input.star-5:checked ~ label.star:before {
+
+}
+
+input.star-1:checked ~ label.star:before {
+    color: #F62;
+}
+
+label.star:hover {
+    transform: rotate(-15deg) scale(1.3);
+}
+
+label.star:before {
+    content: '\2605';
 }

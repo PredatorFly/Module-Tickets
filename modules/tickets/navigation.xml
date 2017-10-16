@@ -2,4 +2,5 @@
 	<page key="default" file="supportTickets.php" access="admin,user,subuser" />
 	<page key="submitticket" file="submitTicket.php" access="admin,user,subuser" />
 	<page key="viewticket" file="viewTicket.php" access="admin,user,subuser" />
+	<page key="rate" file="rating.php" access="admin,user,subuser" />
 </navigation>

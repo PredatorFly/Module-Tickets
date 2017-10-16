@@ -42,36 +42,32 @@ function ticketHeader($info)
 </div>';
 }
 
-function ticketReply($replyData, $loggedInAdmin = false)
+function ticketReply($replyData, $uid, $loggedInAdmin = false, $initialPost = false)
 {
-    if (!isset($replyData['is_admin'])) {
-        $date = new DateTime($replyData['created_at']);
-
-        return '<div class="ticket_reply">
-    <div class="date">
-        '.$date->format('jS M Y (H:i)').'
-    </div>
-    <div class="user">
-        <span class="name">
-            <a href="?m=user_admin&p=edit_user&user_id='.$replyData['user_id'].'">'. htmlentities($replyData['users_login']) .'</a> ' .
-                    (!empty($info['users_fname']) ? get_lang('name') . ': ' . htmlentities($info['users_fname']) . (!empty($info['users_lname']) ? ' '.htmlentities($info['users_lname']).' - ' : '') : '') .'
-        </span>
-        <span class="type">
-            '.ucfirst($replyData['users_role']).'
-        </span>
-    </div>
-    <div class="message">'.nl2br(htmlentities($replyData['message'])).'</div>
-    '. ($loggedInAdmin ? '<div class="ticket_footer">'.get_lang('ip') .' '. inet_ntop($replyData['user_ip']) .'</div>' : '') .'
-</div>';
+    if ($initialPost) {
+        // initial message, from ogp_tickets table
+        $date = $replyData['created_at'];
+        $tid = $replyData['tid'];
+        $rating = 0;
     } else {
-        $date = new DateTime($replyData['date']);
-        $class = $replyData['is_admin'] == 1 ? 'admin' : 'user';
+        // replies, from ogp_ticket_replies
+        $date = $replyData['date'];
+        $tid = $replyData['ticket_id'];
+        $rating = $replyData['rating'];
+    }
 
-        return '<div class="ticket_reply '.$class.'">
+    $date = new DateTime($date);
+    $class = 'user';
+    
+    if (isset($replyData['is_admin'])) {
+        $class = $replyData['is_admin'] == 1 ? 'admin' : 'user';
+    }
+
+    $replyBox = '<div class="ticket_reply '. $class .'">
     <div class="date">
         '.$date->format('jS M Y (H:i)').'
     </div>
-    <div class="'.$class.'">
+    <div class="'. $class .'">
         <span class="name">
             <a href="?m=user_admin&p=edit_user&user_id='.$replyData['user_id'].'">'. htmlentities($replyData['users_login']) .'</a> ' .
                     (!empty($info['users_fname']) ? get_lang('name') . ': ' . htmlentities($info['users_fname']) . (!empty($info['users_lname']) ? ' '.htmlentities($info['users_lname']).' - ' : '') : '') .'
@@ -81,9 +77,34 @@ function ticketReply($replyData, $loggedInAdmin = false)
         </span>
     </div>
     <div class="message">'.nl2br(htmlentities($replyData['message'])).'</div>
-    '. ($loggedInAdmin ? '<div class="ticket_footer">'.get_lang('ip') .' '. inet_ntop($replyData['user_ip']) .'</div>' : '') .'
-</div>';
+    <div class="ticket_footer">';
+
+    if ($replyData['users_role'] !== 'admin' || $loggedInAdmin || $initialPost) {
+        $replyBox .= '<div class="left">'.get_lang('ip').': '.inet_ntop($replyData['user_ip']).'</div>';
     }
+
+    if ($replyData['users_role'] == 'admin' && !$initialPost) {
+
+        $replyBox .= '<div class="right">';
+        $replyBox .= '<div class="stars"><form action="">';
+
+        for ($x = 5; $x > 0; --$x) {
+            $replyBox .= '<input class="star star-'.$x.'" value="'.$x.'" data-tid="'. $tid .'" data-uid="'. $uid .'" id="reply_'.$replyData['reply_id'].' star-'.$x.'" type="radio" name="star" '. ($x == $rating ? ' checked' : '') .'>';
+            $replyBox .= '<label class="star star-'.$x.'" for="reply_'.$replyData['reply_id'].' star-'.$x.'"></label>';
+        }
+
+        $replyBox .= '</form></div>';
+
+        $replyBox .= '</div>';
+
+    }
+
+    $replyBox .= '<div class="clear"></div>';
+
+    $replyBox .= '</div>
+</div>'; // ./div :: ticket_reply $class
+
+    return $replyBox;
 }
 
 function ticketErrors($errors)

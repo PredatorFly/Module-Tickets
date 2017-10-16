@@ -72,6 +72,7 @@ function exec_ogp_module()
                 if (isset($_SESSION['ticketReply'])) {
                     unset($_SESSION['ticketReply']);
                 }
+
                 $view->refresh("?m=tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
 
                 return;
@@ -106,27 +107,41 @@ function exec_ogp_module()
     if (!empty($ticketData['replies'])) {
         echo '<div class="replyContainer">';
         foreach ($ticketData['replies'] as $replyData) {
-            echo ticketReply($replyData, $isAdmin);
+            echo ticketReply($replyData, $uid, $isAdmin, false);
         }
         echo '</div>';
     } else {
         echo '<div class="no_ticket_replies">'.get_lang('no_ticket_replies').'</div>';
     }
 
-    echo ticketReply($ticketData);
-?>
+    echo ticketReply($ticketData, $uid, $isAdmin, true); ?>
 
 <script>
-    $(function(){
-        $(".ticket_reply_notice").click(function(){
+    $(function() {
+        $(".ticket_reply_notice").click(function() {
             var state = ($(".right").text() == "+" ? "-" : "+");
             $(".ticket_ReplyBox").slideToggle(function() {
                 $(".right").text(state);
+            });
+        });
+
+        $("input[name=star]").click(function() {
+            var data = {
+                reply_id: this.getAttribute('id').split(/[ ,]+/)[0].replace(/\D/g, ''),
+                tid: this.getAttribute('data-tid'),
+                uid: this.getAttribute('data-uid'),
+                rating: this.getAttribute('value')
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "home.php?m=tickets&p=rate&type=cleared&data_type=json",
+                data: data,
+                dataType: "json"
             });
         });
     });
 </script>
 
 <?php
-
 }
