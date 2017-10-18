@@ -47,7 +47,7 @@ $install_queries[0] = array(
 		`message` TEXT NOT NULL,
 		`service_id` int,
 		`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-		`last_updated` varchar(22) NOT NULL,
+		`last_updated` varchar(22),
 		`status` tinyint NOT NULL,
 		`assigned_to` tinyint,
 		PRIMARY KEY (`tid`)
