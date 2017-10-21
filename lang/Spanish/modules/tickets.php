@@ -61,3 +61,5 @@ define('ticket_open', "Boleto Abierto");
 define('ticket_admin_response', "Respuesta del Administrador");
 define('ticket_customer_response', "Respuesta del Cliente");
 define('ticket_invalid_page_num', "Haz intentado ver un número de página sin boletos!");
+define('ticket_is_closed', "This ticket is closed. You may reply to this ticket to reopen it.");
+define('reply', "Reply");

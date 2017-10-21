@@ -61,3 +61,5 @@ define('ticket_open', "Ticket Aberto");
 define('ticket_admin_response', "Resposta de Administrador");
 define('ticket_customer_response', "Resposta do Cliente");
 define('ticket_invalid_page_num', "Você tentou ver um número de página sem bilhetes!");
+define('ticket_is_closed', "Este ticket encontra-se fechado. Você pode responder ao mesmo para reabri-lo.");
+define('reply', "Responder");

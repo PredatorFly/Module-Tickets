@@ -61,3 +61,5 @@ define('ticket_open', "Ticket Ouvert");
 define('ticket_admin_response', "Réponse Admin");
 define('ticket_customer_response', "Réponse Client");
 define('ticket_invalid_page_num', "Vous avez tenté d'accéder à un numéro de page sans Ticket!");
+define('ticket_is_closed', "Le Ticket est fermé. Vous pouvez répondre au Ticket pour le rouvrir.");
+define('reply', "Répondre");

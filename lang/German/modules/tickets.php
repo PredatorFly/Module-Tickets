@@ -61,3 +61,5 @@ define('ticket_open', "Ticket Open");
 define('ticket_admin_response', "Admin Response");
 define('ticket_customer_response', "Customer Response");
 define('ticket_invalid_page_num', "You have attempted to view a page number with no tickets!");
+define('ticket_is_closed', "This ticket is closed. You may reply to this ticket to reopen it.");
+define('reply', "Reply");
