@@ -26,10 +26,8 @@ function exec_ogp_module()
             $errors[] = get_lang('invalid_ticket_subject_length');
         }
 
-        if (!empty($services)) {
-            if (array_search($_POST['ticket_service'], array_column($services, 'home_id')) === false) {
-                $errors[] = get_lang('invalid_home_selected');
-            }
+        if (array_search($_POST['ticket_service'], array_column($services, 'home_id')) === false) {
+            $errors[] = get_lang('invalid_home_selected');
         }
 
         if (empty($_POST['ticket_message'])) {
@@ -50,8 +48,8 @@ function exec_ogp_module()
             if (isset($_SESSION['ticket'])) {
                 unset($_SESSION['ticket']);
             }
-            $view->refresh("?m=tickets&p=viewticket&tid=".$open['tid']."&uid=".$open['uid'], 0);
 
+            $view->refresh("?m=tickets&p=viewticket&tid=".$open['tid']."&uid=".$open['uid'], 0);
             return;
         } else {
             echo ticketErrors($errors);
@@ -71,11 +69,10 @@ function exec_ogp_module()
     <div class="ticket_elementDiv">
         <label>'.get_lang('ticket_service').'</label>
         <select name="ticket_service">';
-    if ($services) {
+
         foreach ($services as $service) {
             echo '<option value="'.$service['home_id'].'" '.(isset($_SESSION['ticket']['ticket_service']) && $_SESSION['ticket']['ticket_service'] == $service['home_id'] ? 'selected' : '') .'>'.htmlentities($service['home_name']).'</option>';
         }
-    }
         
     echo '</select>
     </div>
@@ -87,4 +84,5 @@ function exec_ogp_module()
         <input type="submit" value="'.get_lang('submit_ticket').'" />
     </div>
 </form>';
+
 }

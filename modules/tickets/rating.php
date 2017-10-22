@@ -38,9 +38,9 @@ function exec_ogp_module()
         }
 
         if ($ticket->setRating($tid, $reply_id, $rating)) {
-            echo json_encode(array('message' => get_lang('successfully_rated_ticket')));
+            echo json_encode(array('message' => get_lang('successfully_rated_response')));
         } else {
-            echo json_encode(array('message' => get_lang('failed_rating_ticket')));
+            echo json_encode(array('message' => get_lang('failed_rating_response')));
         }
     }
 

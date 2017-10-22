@@ -206,6 +206,7 @@ label.star {
     color: #444;
     transition: all .2s;
     font-size: 16px;
+    cursor: pointer;
 }
 
 input.star:checked ~ label.star:before {

@@ -185,13 +185,13 @@ class Ticket
             $homes = $this->db->getHomesFor('user_and_group', $user_id);
         }
 
-        if (!$homes || count($homes) === 0) {
-            return false;
-        }
-
         $return = array(
             array('home_id' => 0, 'home_name' => '')
         );
+
+        if (!$homes) {
+            return $return;
+        }
 
         foreach ($homes as $home) {
             $return[] = array('home_id' => $home['home_id'], 'home_name' => $home['home_name']);

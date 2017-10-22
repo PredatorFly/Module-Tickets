@@ -2,7 +2,8 @@
 
 function ticketHeader($info)
 {
-    $date = new DateTime($info['created_at']);
+    $created = new DateTime($info['created_at']);
+    $updated = new DateTime($info['last_updated']);
 
     return '<div class="divTable">
     <div class="divTableBody">
@@ -21,11 +22,11 @@ function ticketHeader($info)
         </div>
         <div class="divTableRow">
             <div class="divTableCell infoblock_ticket">'.get_lang('ticket_submitted').'</div>
-            <div class="divTableCell contentblock_ticket">'.$date->format('jS M Y (H:i)').'</div>
+            <div class="divTableCell contentblock_ticket">'.$created->format('jS M Y (H:i)').'</div>
         </div>
         <div class="divTableRow">
             <div class="divTableCell infoblock_ticket">'.get_lang('ticket_updated').'</div>
-            <div class="divTableCell contentblock_ticket">'.$date->format('jS M Y (H:i)').'</div>
+            <div class="divTableCell contentblock_ticket">'.$updated->format('jS M Y (H:i)').'</div>
         </div>
         <div class="divTableRow">
             <div class="divTableCell infoblock_ticket">'.get_lang('ticket_status').'</div>
@@ -70,7 +71,7 @@ function ticketReply($replyData, $uid, $loggedInAdmin = false, $initialPost = fa
     <div class="'. $class .'">
         <span class="name">
             <a href="?m=user_admin&p=edit_user&user_id='.$replyData['user_id'].'">'. htmlentities($replyData['users_login']) .'</a> ' .
-                    (!empty($info['users_fname']) ? get_lang('name') . ': ' . htmlentities($info['users_fname']) . (!empty($info['users_lname']) ? ' '.htmlentities($info['users_lname']).' - ' : '') : '') .'
+                    (!empty($replyData['users_fname']) ? htmlentities($replyData['users_fname']) . (!empty($replyData['users_lname']) ? ' '.htmlentities($replyData['users_lname']) : '') : '') .'
         </span>
         <span class="type">
             '.ucfirst($replyData['users_role']).'
@@ -79,12 +80,11 @@ function ticketReply($replyData, $uid, $loggedInAdmin = false, $initialPost = fa
     <div class="message">'.nl2br(htmlentities($replyData['message'])).'</div>
     <div class="ticket_footer">';
 
-    if ($replyData['users_role'] !== 'admin' || $loggedInAdmin || $initialPost) {
+    if ($replyData['users_role'] !== 'admin' || $loggedInAdmin) {
         $replyBox .= '<div class="left">'.get_lang('ip').': '.inet_ntop($replyData['user_ip']).'</div>';
     }
 
     if ($replyData['users_role'] == 'admin' && !$initialPost) {
-
         $replyBox .= '<div class="right">';
         $replyBox .= '<div class="stars"><form action="">';
 
@@ -94,13 +94,10 @@ function ticketReply($replyData, $uid, $loggedInAdmin = false, $initialPost = fa
         }
 
         $replyBox .= '</form></div>';
-
         $replyBox .= '</div>';
-
     }
 
     $replyBox .= '<div class="clear"></div>';
-
     $replyBox .= '</div>
 </div>'; // ./div :: ticket_reply $class
 

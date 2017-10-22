@@ -110,11 +110,15 @@ function exec_ogp_module()
             echo ticketReply($replyData, $uid, $isAdmin, false);
         }
         echo '</div>';
-    } else {
+    } 
+
+    if (empty($ticketData['replies']) && $ticketData['status'] != 0) {
         echo '<div class="no_ticket_replies">'.get_lang('no_ticket_replies').'</div>';
     }
 
-    echo ticketReply($ticketData, $uid, $isAdmin, true); ?>
+    echo ticketReply($ticketData, $uid, $isAdmin, true);
+    
+?>
 
 <script>
     $(function() {
@@ -137,7 +141,10 @@ function exec_ogp_module()
                 type: "POST",
                 url: "home.php?m=tickets&p=rate&type=cleared&data_type=json",
                 data: data,
-                dataType: "json"
+                success: function(data) {
+                    console.log(data.message);
+                },
+                dataType: "json",
             });
         });
     });
