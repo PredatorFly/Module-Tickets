@@ -63,3 +63,6 @@ define('ticket_customer_response', "Réponse Client");
 define('ticket_invalid_page_num', "Vous avez tenté d'accéder à un numéro de page sans Ticket!");
 define('ticket_is_closed', "Le Ticket est fermé. Vous pouvez répondre au Ticket pour le rouvrir.");
 define('reply', "Répondre");
+define('invalid_rating', "La note reçue n'est pas valide.");
+define('successfully_rated_response', "Réponse correctement notée.");
+define('failed_rating_response', "Erreur lors de l'évaluation de la réponse.");

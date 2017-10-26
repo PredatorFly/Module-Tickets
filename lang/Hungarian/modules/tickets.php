@@ -63,3 +63,6 @@ define('ticket_customer_response', "Ügyfél válasza");
 define('ticket_invalid_page_num', "You have attempted to view a page number with no tickets!");
 define('ticket_is_closed', "This ticket is closed. You may reply to this ticket to reopen it.");
 define('reply', "Reply");
+define('invalid_rating', "The rating received is not valid.");
+define('successfully_rated_response', "Successfully rated response.");
+define('failed_rating_response', "Failed to rate the response.");

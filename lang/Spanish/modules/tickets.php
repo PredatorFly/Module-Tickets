@@ -63,3 +63,6 @@ define('ticket_customer_response', "Respuesta del Cliente");
 define('ticket_invalid_page_num', "Haz intentado ver un número de página sin boletos!");
 define('ticket_is_closed', "This ticket is closed. You may reply to this ticket to reopen it.");
 define('reply', "Reply");
+define('invalid_rating', "The rating received is not valid.");
+define('successfully_rated_response', "Successfully rated response.");
+define('failed_rating_response', "Failed to rate the response.");
