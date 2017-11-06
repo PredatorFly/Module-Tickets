@@ -32,7 +32,7 @@ define('ticket_not_found', "The given ticket parameters don't match an existing 
 define('ticket_cant_read', "Insufficient permission to view ticket.");
 define('cant_view_ticket', "Unable to retrieve the ticket information.");
 define('ticket_id', "Ticket ID");
-define('service_id', "Service ID");
+define('service_id', "Szolgáltatás azonosító");
 define('ticket_submitted', "Ticket Submitted");
 define('submitter_info', "Beküldő adatai");
 define('name', "Név");
@@ -43,7 +43,7 @@ define('ticket_close', "Bezárás");
 define('no_ticket_replies', "No Ticket Replies");
 define('no_tickets_submitted', "No Tickets have been submitted.");
 define('submit_ticket', "Submit Ticket");
-define('ticket_service', "Service");
+define('ticket_service', "Szolgáltatás");
 define('ticket_message', "Üzenet");
 define('ticket_errors_occured', "The following errors occured when submitting your ticket");
 define('no_ticket_subject', "No Ticket Subject");
