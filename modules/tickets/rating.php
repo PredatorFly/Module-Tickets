@@ -1,12 +1,15 @@
 <?php
 
 require 'include/ticket.php';
+require 'include/TicketSettings.php';
 
 function exec_ogp_module()
 {
     global $db, $view;
 
     $ticket = new Ticket($db);
+    $TicketSettings = (new TicketSettings($db))->get('ratings_enabled');
+
     $isAdmin = $db->isAdmin($_SESSION['user_id']);
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,6 +22,11 @@ function exec_ogp_module()
             $rating = (int)$_POST['rating'];
         } else {
             $rating = 0;
+        }
+
+        if (!$TicketSettings['ratings_enabled']) {
+            echo json_encode(array('message' => get_lang('ratings_disabled')));
+            return;
         }
 
         if (!$ticket->exists($tid, $uid)) {

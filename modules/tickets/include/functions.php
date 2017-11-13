@@ -43,25 +43,16 @@ function ticketHeader($info)
 </div>';
 }
 
-function ticketReply($replyData, $uid, $loggedInAdmin = false, $initialPost = false)
+function ticketMessage($messageData, $uid, $loggedInAdmin = false, $ratingsEnabled)
 {
-    if ($initialPost) {
-        // initial message, from ogp_tickets table
-        $date = $replyData['created_at'];
-        $tid = $replyData['tid'];
-        $rating = 0;
-    } else {
-        // replies, from ogp_ticket_replies
-        $date = $replyData['date'];
-        $tid = $replyData['ticket_id'];
-        $rating = $replyData['rating'];
-    }
+    $date = new DateTime($messageData['date']);
+    $tid = $messageData['ticket_id'];
+    $rating = $messageData['rating'];
 
-    $date = new DateTime($date);
     $class = 'user';
     
-    if (isset($replyData['is_admin'])) {
-        $class = $replyData['is_admin'] == 1 ? 'admin' : 'user';
+    if (isset($messageData['is_admin'])) {
+        $class = $messageData['is_admin'] == 1 ? 'admin' : 'user';
     }
 
     $replyBox = '<div class="ticket_reply '. $class .'">
@@ -70,44 +61,60 @@ function ticketReply($replyData, $uid, $loggedInAdmin = false, $initialPost = fa
     </div>
     <div class="'. $class .'">
         <span class="name">
-            <a href="?m=user_admin&p=edit_user&user_id='.$replyData['user_id'].'">'. htmlentities($replyData['users_login']) .'</a> ' .
-                    (!empty($replyData['users_fname']) ? htmlentities($replyData['users_fname']) . (!empty($replyData['users_lname']) ? ' '.htmlentities($replyData['users_lname']) : '') : '') .'
+            <a href="?m=user_admin&p=edit_user&user_id='.$messageData['user_id'].'">'. htmlentities($messageData['users_login']) .'</a> ' .
+                    (!empty($messageData['users_fname']) ? htmlentities($messageData['users_fname']) . (!empty($messageData['users_lname']) ? ' '.htmlentities($messageData['users_lname']) : '') : '') .'
         </span>
         <span class="type">
-            '.ucfirst($replyData['users_role']).'
+            '.ucfirst($messageData['users_role']).'
         </span>
     </div>
-    <div class="message">'.nl2br(htmlentities($replyData['message'])).'</div>
-    <div class="ticket_footer">';
+    <div class="message">'.nl2br(htmlentities($messageData['message'])).'</div>';
 
-    if ($replyData['users_role'] !== 'admin' || $loggedInAdmin) {
-        $replyBox .= '<div class="left">'.get_lang('ip').': '.inet_ntop($replyData['user_ip']).'</div>';
+    $replyBox .= '<div class="ticket_footer">';
+
+    $replyBox .= '<div class="footer_row">';
+
+    if ($messageData['users_role'] !== 'admin' || $loggedInAdmin) {
+        $replyBox .= '<div class="left">'.get_lang('ip').': '.inet_ntop($messageData['user_ip']).'</div>';
     }
 
-    if ($replyData['users_role'] == 'admin' && !$initialPost) {
-        $replyBox .= '<div class="right">';
-        $replyBox .= '<div class="stars"><form action="">';
-
-        for ($x = 5; $x > 0; --$x) {
-            $replyBox .= '<input class="star star-'.$x.'" value="'.$x.'" data-tid="'. $tid .'" data-uid="'. $uid .'" id="reply_'.$replyData['reply_id'].' star-'.$x.'" type="radio" name="star" '. ($x == $rating ? ' checked' : '') .'>';
-            $replyBox .= '<label class="star star-'.$x.'" for="reply_'.$replyData['reply_id'].' star-'.$x.'"></label>';
-        }
-
-        $replyBox .= '</form></div>';
-        $replyBox .= '</div>';
+    if ($messageData['users_role'] == 'admin' && $ratingsEnabled) {
+        $replyBox .= '<div class="right rateResponse" data-tid="'. $tid .'" data-uid="'. $uid .'" data-reply-id="'. $messageData['reply_id'] .'" data-rating="'. $rating .'"></div>';
     }
 
     $replyBox .= '<div class="clear"></div>';
-    $replyBox .= '</div>
-</div>'; // ./div :: ticket_reply $class
+    $replyBox .= '</div>'; // footer_row
+
+    if (isset($messageData['attachments'])) {
+        $replyBox .= '<div class="footer_row attachmentContainer">';
+
+        $replyBox .= '<div class="left attachmentHeader">'. get_lang('attachments') .'</div>';
+        $replyBox .= '<div class="clear"></div>';
+        $replyBox .= '<div class="left attachmentList">';
+
+        $attachmentList = '';
+        foreach ($messageData['attachments'] as $attachment) {
+            $attachmentList .= '<a href="#" class="downloadAttachmentLink" data-id="'. $attachment['attachment_id'] .'" data-tid="'. $tid .'" data-uid="'. $uid .'">'. htmlentities($attachment['original_name']) .'</a>, ';
+        }
+
+        $replyBox .= rtrim($attachmentList, ', ');
+        $replyBox .= '</div>'; //left
+        $replyBox .= '<div class="clear"></div>';
+
+        $replyBox .= '</div>'; //footer row.
+    }
+
+    $replyBox .= '</div>'; // ticket_footer
+    $replyBox .= '</div>'; // ./div :: ticket_reply $class
 
     return $replyBox;
 }
 
-function ticketErrors($errors)
+function ticketErrors($errors = array(), $header = '')
 {
+    $header = empty($header) ? get_lang('ticket_errors_occured') . ':' : $header;
     $return = '<div class="ticketErrorHolder">
-    <p class="failure">'.(get_lang('ticket_errors_occured') . ':').'</p>
+    <p class="failure" id="errorHeader">'. $header .'</p>
     <ul class="ticketErrorList">';
     foreach ($errors as $error) {
         $return .= '<li class="ticketError">' . $error . '</li>';
@@ -128,4 +135,75 @@ function ticketCodeToName($code, $css = false)
     );
     
     return $css ? $codes[$code] : get_lang($codes[$code]);
+}
+
+function attachmentForm()
+{
+    $html = '
+            <div class="attachment_container">
+                <div class="attachment_header">'. get_lang('attachments') .'</div>
+
+                <div class="attachment_add">
+                    <button id="add_file_attachment">'. get_lang('add_file_attachment') .'</button>
+                </div>
+
+                <div class="attachment_inputs">
+                    <input type="file" name="ticket_file[]">
+                </div>
+
+                <div class="attachment_info">
+                    <div id="file_size_info"></div>
+                    <div id="extension_info"></div>
+                </div>
+            </div>
+    ';
+
+    return $html;
+}
+
+function bytesTo($bytes)
+{
+    if ($bytes == 0) {
+        return '0.00 B';
+    }
+
+    $s = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+    $e = floor(log($bytes, 1024));
+
+    return round($bytes / pow(1024, $e), 2) . $s[$e];
+}
+
+function toBytes($from)
+{
+    $number = substr($from, 0, -2);
+    switch (strtoupper(substr($from, -2))) {
+        case "KB":
+            return $number*1024;
+        case "MB":
+            return $number*pow(1024, 2);
+        case "GB":
+            return $number*pow(1024, 3);
+        case "TB":
+            return $number*pow(1024, 4);
+        case "PB":
+            return $number*pow(1024, 5);
+        default:
+            return $from;
+    }
+}
+
+function splitExtensions($extensions, $delimiter = ',')
+{
+    $extArr = explode($delimiter, $extensions);
+    $extList = '';
+        
+    foreach ($extArr as $ext) {
+        if (empty($ext)) {
+            continue;
+        }
+            
+        $extList .= str_replace(array('.', ' '), '', $ext) . $delimiter . ' ';
+    }
+        
+    return rtrim($extList, $delimiter . ' ');
 }

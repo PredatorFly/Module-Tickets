@@ -23,18 +23,28 @@
  */
 
 $module_title = "Tickets";
-$module_version = "0.1";
-$db_version = 0;
+$module_version = "1.0a";
+$db_version = 1;
 $module_required = false;
 $module_menus = array(
 					array(
-						'name'	=>	'Support Tickets',
-						'group'	=>	'user'
-					)
+						'name'		=>	'Support Tickets',
+						'group'		=>	'user',
+					),
+
+					array(
+						'name'		=>	'Support Ticket Settings',
+						'group'		=>	'admin',
+						'subpage'	=>	'ticket_settings',
+					),
 				);
 
 $install_queries[0] = array(
 	"DROP TABLE IF EXISTS `".OGP_DB_PREFIX."ticket_replies`",
+
+	"DROP TABLE IF EXISTS `".OGP_DB_PREFIX."ticket_messages`",
+	"DROP TABLE IF EXISTS `".OGP_DB_PREFIX."ticket_attachments`",
+	"DROP TABLE IF EXISTS `".OGP_DB_PREFIX."ticket_settings`",
 	"DROP TABLE IF EXISTS `".OGP_DB_PREFIX."tickets`",
 
 	"CREATE TABLE `".OGP_DB_PREFIX."tickets` (
@@ -44,7 +54,6 @@ $install_queries[0] = array(
 		`parent_id` int NOT NULL,
 		`user_ip` varbinary(16) NOT NULL,
 		`subject` varchar(64) NOT NULL,
-		`message` TEXT NOT NULL,
 		`service_id` int,
 		`created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 		`last_updated` varchar(22),
@@ -53,7 +62,7 @@ $install_queries[0] = array(
 		PRIMARY KEY (`tid`)
 	);",
 
-	"CREATE TABLE `".OGP_DB_PREFIX."ticket_replies` (
+	"CREATE TABLE `".OGP_DB_PREFIX."ticket_messages` (
 		`reply_id` int NOT NULL AUTO_INCREMENT,
 		`ticket_id` int NOT NULL,
 		`user_id` int NOT NULL,
@@ -65,5 +74,32 @@ $install_queries[0] = array(
 		PRIMARY KEY (`reply_id`)
 	);",
 
-	"ALTER TABLE `".OGP_DB_PREFIX."ticket_replies` ADD CONSTRAINT `".OGP_DB_PREFIX."ticket_replies_fk0` FOREIGN KEY (`ticket_id`) REFERENCES `".OGP_DB_PREFIX."tickets`(`tid`);",
+	"ALTER TABLE `".OGP_DB_PREFIX."ticket_messages` ADD CONSTRAINT `".OGP_DB_PREFIX."ticket_messages_fk0` FOREIGN KEY (`ticket_id`) REFERENCES `".OGP_DB_PREFIX."tickets`(`tid`);",
+);
+
+$install_queries[1] = array(
+	"CREATE TABLE `".OGP_DB_PREFIX."ticket_attachments` (
+		`attachment_id` int NOT NULL AUTO_INCREMENT,
+		`ticket_id` int NOT NULL,
+		`reply_id` int,
+		`original_name` varchar(255) NOT NULL,
+		`unique_name` varchar(32) NOT NULL UNIQUE,
+		PRIMARY KEY (`attachment_id`)
+	);",
+);
+
+$install_queries[2] = array(
+	"CREATE TABLE `".OGP_DB_PREFIX."ticket_settings` (
+		`id` INT NOT NULL AUTO_INCREMENT,
+		`setting_name` varchar(32) NOT NULL UNIQUE,
+		`setting_value` TEXT NOT NULL,
+		PRIMARY KEY (`id`)
+	);",
+	
+	"INSERT INTO `".OGP_DB_PREFIX."ticket_settings` (setting_name, setting_value) VALUES ('ratings_enabled', true)",
+	"INSERT INTO `".OGP_DB_PREFIX."ticket_settings` (setting_name, setting_value) VALUES ('attachments_enabled', true)",
+	"INSERT INTO `".OGP_DB_PREFIX."ticket_settings` (setting_name, setting_value) VALUES ('attachment_max_size', '52428800')",
+	"INSERT INTO `".OGP_DB_PREFIX."ticket_settings` (setting_name, setting_value) VALUES ('attachment_limit', '5')",
+	"INSERT INTO `".OGP_DB_PREFIX."ticket_settings` (setting_name, setting_value) VALUES ('attachment_save_dir', '".__DIR__ . '/uploads' ."')",
+	"INSERT INTO `".OGP_DB_PREFIX."ticket_settings` (setting_name, setting_value) VALUES ('attachment_extensions', 'jpg, gif, jpeg, jpg, png, pdf, txt, sql, zip')",
 );

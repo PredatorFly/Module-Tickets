@@ -50,7 +50,7 @@ class Ticket
 
     public function getTicket($tid, $uid)
     {
-        $query = "SELECT a.tid, a.uid, a.user_id, a.user_ip, a.subject, a.message, a.status, a.service_id, a.created_at, a.last_updated,
+        $query = "SELECT a.tid, a.uid, a.user_id, a.user_ip, a.subject, a.status, a.service_id, a.created_at, a.last_updated,
                             b.users_login, b.users_fname, b.users_lname, b.users_role, b.users_email
                     FROM OGP_DB_PREFIXtickets a
                         JOIN OGP_DB_PREFIXusers b
@@ -62,7 +62,10 @@ class Ticket
 
         if (is_array($result)) {
             $ticketInfo = $result[0];
-            $ticketInfo['replies'] = $this->getTicketReplies($tid);
+            $ticketInfo['messages'] = $this->ticketMessageArray(
+                $this->getMessages($tid),
+                $this->getAttachments($tid)
+            );
             
             return $ticketInfo;
         } else {
@@ -70,11 +73,11 @@ class Ticket
         }
     }
 
-    private function getTicketReplies($tid)
+    private function getMessages($tid)
     {
         $query = "SELECT a.reply_id, a.ticket_id, a.user_id, a.user_ip, a.message, a.date, a.rating, a.is_admin,
                             b.user_id, b.users_login, b.users_role, b.users_fname, b.users_lname, b.users_email, b.users_parent
-                        FROM OGP_DB_PREFIXticket_replies a
+                        FROM OGP_DB_PREFIXticket_messages a
                             JOIN OGP_DB_PREFIXusers b
                                 ON (a.user_id = b.user_id)
                         WHERE a.ticket_id = $tid
@@ -83,7 +86,35 @@ class Ticket
         return $this->db->resultQuery($query) ?: array();
     }
 
-    public function open($user_id, $user_ip, $subject, $message, $service_id)
+    private function getAttachments($tid)
+    {
+        $query = "SELECT attachment_id, reply_id, original_name, unique_name
+                    FROM OGP_DB_PREFIXticket_attachments
+                    WHERE ticket_id = $tid
+                    ORDER BY reply_id DESC";
+
+        return $this->db->resultQuery($query) ?: array();
+    }
+
+    private function ticketMessageArray($messages, $attachments)
+    {
+        $keys = array_keys($messages);
+        $end = end($keys);
+
+        foreach ($messages as $i => $message) {
+            foreach ($attachments as $k => $v) {
+                if ($messages[$i]['reply_id'] == $v['reply_id']) {
+                    $messages[$i]['attachments'][] = $v;
+                } elseif (is_null($v['reply_id']) && !isset($messages[$end]['attachments'])) {
+                    $messages[$end]['attachments'][] = $v;
+                }
+            }
+        }
+
+        return $messages;
+    }
+
+    public function open($user_id, $user_ip, $subject, $message, $service_id, $is_admin)
     {
         $parent_id = $user_id;
         if ($this->db->isSubUser($user_id)) {
@@ -100,35 +131,39 @@ class Ticket
             'parent_id'     =>  $parent_id,
             'user_ip'       =>  inet_pton($user_ip),
             'subject'       =>  $subject,
-            'message'       =>  $message,
             'service_id'    =>  ($service_id === 0 ? null : (int)$service_id),
             'status'        =>  1
         );
 
         $insertId = $this->db->resultInsertId('tickets', $fields);
         if ($insertId !== false) {
+            $this->message($insertId, $user_id, $user_ip, $message, $is_admin, $uid);
             $this->updateTimestamp($insertId, $uid);
+
             return array('uid' => $uid, 'tid' => $insertId);
-        }
-    }
-
-    public function reply($tid, $user_id, $user_ip, $message, $is_admin, $uid)
-    {
-        $query = "INSERT INTO OGP_DB_PREFIXticket_replies (
-                        ticket_id, user_id, user_ip, message, is_admin
-                    ) VALUES (
-                        $tid, $user_id,
-                        '".inet_pton($user_ip)."',
-                        '".$this->db->real_escape_string($message)."', ".($is_admin ? '1' : '0')."
-                    )";
-
-        if ($this->db->query($query)) {
-            $this->updateStatus($tid, $uid, ($is_admin ? 2 : 3));
-            $this->updateTimestamp($tid, $uid);
-            return true;
         }
 
         return false;
+    }
+
+    public function message($tid, $user_id, $user_ip, $message, $is_admin, $uid)
+    {
+        $fields = array(
+            'ticket_id'     =>  $tid,
+            'user_id'       =>  $user_id,
+            'user_ip'       =>  inet_pton($user_ip),
+            'message'       =>  $message,
+            'is_admin'      =>  ($is_admin ? '1' : '0')
+        );
+
+        $insertId = $this->db->resultInsertId('ticket_messages', $fields);
+        
+        if ($insertId !== false) {
+            $this->updateStatus($tid, $uid, ($is_admin ? 2 : 3));
+            $this->updateTimestamp($tid, $uid);
+        }
+
+        return $insertId;
     }
 
     // 0 = closed
@@ -202,14 +237,20 @@ class Ticket
 
     public function setRating($tid, $reply_id, $rating)
     {
-        $query = "UPDATE OGP_DB_PREFIXticket_replies
+        $query = "UPDATE OGP_DB_PREFIXticket_messages
                     SET rating = ".(int)$rating."
                     WHERE ticket_id = ".(int)$tid." AND reply_id = ".(int)$reply_id;
 
         return $this->db->query($query);
     }
 
-    public function assignTo($tid, $admin_id)
+    // Move this to the attachment class...?
+    public function getAttachmentById($attachment_id, $tid)
     {
+        $query = "SELECT original_name, unique_name FROM OGP_DB_PREFIXticket_attachments
+                    WHERE attachment_id = ".(INT)$attachment_id." AND ticket_id = ".(int)$tid;
+
+        $result = $this->db->resultQuery($query);
+        return $result[0] ?: false;
     }
 }

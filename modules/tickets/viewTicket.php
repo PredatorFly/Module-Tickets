@@ -1,6 +1,9 @@
 <?php
 
 require 'include/ticket.php';
+require 'include/Attachments.php';
+require 'include/TicketSettings.php';
+
 require 'include/functions.php';
 
 function exec_ogp_module()
@@ -12,12 +15,16 @@ function exec_ogp_module()
     }
 
     $ticket = new Ticket($db);
+    $TicketSettings = new TicketSettings($db);
+
     $isAdmin = $db->isAdmin($_SESSION['user_id']);
+    $attachmentSettings = $TicketSettings->get(array('attachments_enabled', 'attachment_save_dir', 'attachment_limit', 'attachment_max_size', 'attachment_extensions', 'ratings_enabled'));
 
     echo '<h2>'.get_lang('viewing_ticket').'</h2>';
 
     $tid = (int)$_GET['tid'];
     $uid = $_GET['uid'];
+    
     $ticketData = $ticket->getTicket($tid, $uid);
 
     if (!$ticket->exists($tid, $uid)) {
@@ -42,6 +49,15 @@ function exec_ogp_module()
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $attachments = new Attachments(
+            $db,
+            $_FILES['ticket_file'],
+            $attachmentSettings['attachment_save_dir'],
+            $attachmentSettings['attachment_limit'],
+            $attachmentSettings['attachment_max_size'],
+            explode(', ', $attachmentSettings['attachment_extensions'])
+        );
+
         if (isset($_POST['ticket_close'])) {
             $ticket->updateStatus($tid, $uid, 0);
             $view->refresh("?m=tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
@@ -50,9 +66,10 @@ function exec_ogp_module()
 
         if (isset($_POST['ticket_submit_response'])) {
             $_POST = array_map('trim', $_POST);
-            $_SESSION['ticketReply'] = $_POST['reply_content'];
+            $_SESSION['ticketReply'] = strip_real_escape_string($_POST['reply_content']);
 
-            $errors = array();
+            $errors     = array();
+            $fileErrors = array();
 
             if (empty($_POST['reply_content'])) {
                 $errors[] = get_lang('no_ticket_reply');
@@ -60,8 +77,16 @@ function exec_ogp_module()
                 $errors[] = get_lang('invalid_ticket_reply_length');
             }
 
+            if ($attachments->checkPath() === false && $attachmentSettings['attachments_enabled']) {
+                $fileErrors[] = get_lang('attachment_directory_not_writable');
+            }
+
+            if ($attachments->validAttachmentCount() === false && $attachmentSettings['attachments_enabled']) {
+                $fileErrors[] = get_lang('attachment_invalid_file_count');
+            }
+
             if (empty($errors)) {
-                $reply = $ticket->reply($tid, $_SESSION['user_id'], getClientIPAddress(), strip_real_escape_string($_POST['reply_content']), $isAdmin, $uid);
+                $reply = $ticket->message($tid, $_SESSION['user_id'], getClientIPAddress(), strip_real_escape_string($_POST['reply_content']), $isAdmin, $uid);
                 
                 if (!$reply) {
                     echo ticketErrors(array(get_lang('failed_to_reply')));
@@ -73,8 +98,19 @@ function exec_ogp_module()
                     unset($_SESSION['ticketReply']);
                 }
 
-                $view->refresh("?m=tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
+                if ($attachmentSettings['attachments_enabled']) {
+                    // Validate the uploaded files if specified path exists and is writable. and if the amount of files is valid.
+                    // if any files fail to validate, then only save/move the ones which validated successfully and show an error for the ones which didn't.
+                    if (empty($fileErrors)) {
+                        $validator = $attachments->validate();
+                        $fileErrors[] = $validator->getErrors();
+                        $attachments->save($tid, $reply);
+                    }
 
+                    setcookie('fileErrors', json_encode(array('uid' => $uid, 'fileErrors' => $fileErrors)), time() + 86400, '/');
+                }
+
+                $view->refresh("?m=tickets&p=viewticket&tid=".$tid."&uid=".$uid, 0);
                 return;
             } else {
                 echo ticketErrors($errors);
@@ -84,6 +120,7 @@ function exec_ogp_module()
         }
     }
 
+    echo '<div id="jsErrorBox">'. ticketErrors() .'</div>';
     echo ticketHeader($ticketData);
 
     if ($ticketData['status'] == 0) {
@@ -97,58 +134,35 @@ function exec_ogp_module()
     }
 
     echo '<div class="ticket_ReplyBox status_'.ticketCodeToName($ticketData['status'], true).'">
-        <form method="POST">
-            <textarea name="reply_content" style="width:100%;" rows="12">'.(isset($_SESSION['ticketReply']) ? $_SESSION['ticketReply'] : '').'</textarea>
-            <input type="submit" class="ticket_button" name="ticket_submit_response" value="'. get_lang('ticket_submit_response') . '">
+        <form method="POST" enctype="multipart/form-data">
+            <textarea name="reply_content" id="messageBox" style="width:100%;" rows="12">'.(isset($_SESSION['ticketReply']) ? $_SESSION['ticketReply'] : '').'</textarea>';
+
+            if ($attachmentSettings['attachments_enabled']) {
+                echo attachmentForm();
+            }
+
+            echo '<input type="submit" id="submit" class="ticket_button" name="ticket_submit_response" value="'. get_lang('ticket_submit_response') . '">
         '.($ticketData['status'] != 0 ? '<input type="submit" class="ticket_button" name="ticket_close" value="'. get_lang('ticket_close') . '">' : '').'
         </form>
     </div>';
 
-    if (!empty($ticketData['replies'])) {
+    if (!empty($ticketData['messages'])) {
         echo '<div class="replyContainer">';
-        foreach ($ticketData['replies'] as $replyData) {
-            echo ticketReply($replyData, $uid, $isAdmin, false);
+        foreach ($ticketData['messages'] as $message) {
+            echo ticketMessage($message, $uid, $isAdmin, $attachmentSettings['ratings_enabled']);
         }
         echo '</div>';
-    } 
+    }
 
-    if (empty($ticketData['replies']) && $ticketData['status'] != 0) {
+    if (empty($ticketData['messages']) && $ticketData['status'] != 0) {
         echo '<div class="no_ticket_replies">'.get_lang('no_ticket_replies').'</div>';
     }
 
-    echo ticketReply($ticketData, $uid, $isAdmin, true);
-    
+    require 'js/javascript_vars.php';
 ?>
-
-<script>
-    $(function() {
-        $(".ticket_reply_notice").click(function() {
-            var state = ($("#toggleNoticeIcon").text() == "+" ? "-" : "+");
-            $(".ticket_ReplyBox").slideToggle(function() {
-                $("#toggleNoticeIcon").text(state);
-            });
-        });
-
-        $("input[name=star]").click(function() {
-            var data = {
-                reply_id: this.getAttribute('id').split(/[ ,]+/)[0].replace(/\D/g, ''),
-                tid: this.getAttribute('data-tid'),
-                uid: this.getAttribute('data-uid'),
-                rating: this.getAttribute('value')
-            };
-
-            $.ajax({
-                type: "POST",
-                url: "home.php?m=tickets&p=rate&type=cleared&data_type=json",
-                data: data,
-                success: function(data) {
-                    console.log(data.message);
-                },
-                dataType: "json",
-            });
-        });
-    });
-</script>
+<script src="modules/tickets/js/helpers.js"></script>
+<script src="modules/tickets/js/ticket.js"></script>
+<script src="modules/tickets/js/rating.js"></script>
 
 <?php
 }
