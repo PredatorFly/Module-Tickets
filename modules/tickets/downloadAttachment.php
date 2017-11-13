@@ -49,10 +49,10 @@ function exec_ogp_module()
     }
 
     $mime = new finfo(FILEINFO_MIME_TYPE);
-    $encoding = new finfo(FILEINFO_MIME_TYPE);
+    $encoding = new finfo(FILEINFO_MIME_ENCODING);
 
     header('Content-Type: '.$mime->file($onDiskName));
-    header('Content-Transfer-Encoding: '.$mime->file($onDiskName));
+    header('Content-Transfer-Encoding: '.$mime->file($encoding));
     header('Content-disposition: attachment; filename="'.basename($originalName).'"');
     readfile($onDiskName);
 }
