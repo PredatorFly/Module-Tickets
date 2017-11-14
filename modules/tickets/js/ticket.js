@@ -73,7 +73,7 @@ $(function() {
                     }
 
                     if (fileIndex.size > maxFileSize) {
-                        $(".ticketErrorList").append('<li class="ticketError">' + invalidSizeLang.replace("%1", fileIndex.name).replace("%2", maxFileSize) + '</li>');
+                        $(".ticketErrorList").append('<li class="ticketError">' + invalidSizeLang.replace("%1", fileIndex.name).replace("%2", maxFileSizeUnits) + '</li>');
                         ++errorCount;
                     }
                 }

@@ -6,6 +6,7 @@
     var fileInputs, limit = <?php echo $attachmentSettings['attachment_limit']; ?>;
     var allowedExtensions = <?php echo json_encode(explode(', ', $attachmentSettings['attachment_extensions'])); ?>;
     var maxFileSize = <?php echo $attachmentSettings['attachment_max_size']; ?>;
+    var maxFileSizeUnits = "<?php echo bytesTo($attachmentSettings['attachment_max_size']); ?>";
     var fixBeforeSubmitting = "<?php echo get_lang('ticket_fix_before_submitting'); ?>"
     var fixBeforeReplying = "<?php echo get_lang('ticket_fix_before_replying'); ?>"
     var problemWithAttachments = "<?php echo get_lang('ticket_problem_with_attachments'); ?>"

@@ -58,7 +58,7 @@ function exec_ogp_module()
         }
 
         if ($attachments->validAttachmentCount() === false && $attachmentSettings['attachments_enabled']) {
-            $fileErrors[] = get_lang('attachment_invalid_file_count');
+            $fileErrors[] = get_lang_f('attachment_invalid_file_count', $attachmentSettings['attachment_limit']);
         }
 
         if (empty($errors)) {
