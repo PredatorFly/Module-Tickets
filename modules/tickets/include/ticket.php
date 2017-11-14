@@ -103,9 +103,11 @@ class Ticket
 
         foreach ($messages as $i => $message) {
             foreach ($attachments as $k => $v) {
+                $attachmentC = (is_null($v['reply_id']) ? count($v)-1 : 0);
+
                 if ($messages[$i]['reply_id'] == $v['reply_id']) {
                     $messages[$i]['attachments'][] = $v;
-                } elseif (is_null($v['reply_id']) && !isset($messages[$end]['attachments'])) {
+                } elseif (is_null($v['reply_id']) && (!isset($messages[$end]['attachments']) || count($messages[$end]['attachments']) < $attachmentC)) {
                     $messages[$end]['attachments'][] = $v;
                 }
             }
