@@ -80,7 +80,7 @@ define('ticket_fix_before_replying', "Veuillez corriger l'erreur suivante avant 
 define('ticket_problem_with_attachments', "Une erreur est survenue avec le(s) fichier(s) que vous avez joint.");
 define('ticket_attachment_invalid_extension', "%1 ne contient pas d'extension autorisée.");
 define('ticket_attachment_invalid_size', "%1 est plus gros que la taille de fichier autorisée. %2 maximum!");
-define('ticket_max_file_elements', "Seulement un maximum de %1 champs de fichiers peut exister.");
+define('ticket_max_file_elements', "Seulement un maximum de %1 champs de fichiers peuvent exister.");
 define('ticket_attachment_multiple_files', "Une ou plusieurs entrées de fichier ont plusieurs fichiers sélectionnés.");
 define('attachment_err_ini_size', "%s (%s) dépasse le paramètre 'upload_max_filesize'.");
 define('attachment_err_partial', "%s a été seulement partiellement envoyé.");

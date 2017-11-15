@@ -71,7 +71,7 @@ define('requested_attachment_missing', "The requested attachment does not exist.
 define('requested_attachment_missing_db', "The requested attachment does not exist in the database.");
 define('ratings_disabled', "Rating responses is not enabled.");
 define('attachments', "Attachments");
-define('add_file_attachment', "Add More");
+define('add_file_attachment', "أضف المزيد");
 define('attachment_size_info', "Each selected file may be a maximum of %s");
 define('attachment_file_size_info', "A maximum of %s file(s) may be uploaded, %s each.");
 define('attachment_allowed_extensions_info', "Allowed File Extensions: %s");
