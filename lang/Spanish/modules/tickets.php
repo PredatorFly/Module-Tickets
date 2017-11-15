@@ -79,8 +79,8 @@ define('ticket_fix_before_submitting', "Please fix the following errors before s
 define('ticket_fix_before_replying', "Please fix the following errors before replying to the ticket");
 define('ticket_problem_with_attachments', "There was a problem with the file(s) you attached");
 define('ticket_attachment_invalid_extension', "%1 does not contain a permitted extension.");
-define('ticket_attachment_invalid_size', "%1 is larger than the allowed file size: %2 bytes maximum!");
-define('ticket_max_file_elements', "Only a maximum of %1 file elements may exist.");
+define('ticket_attachment_invalid_size', "%1 is larger than the allowed file size. %2 maximum!");
+define('ticket_max_file_elements', "Only a maximum of %1 file inputs may exist.");
 define('ticket_attachment_multiple_files', "One or more file inputs have multiple files selected.");
 define('attachment_err_ini_size', "%s (%s) exceeds the 'upload_max_filesize' setting.");
 define('attachment_err_partial', "%s was only partially uploaded.");
