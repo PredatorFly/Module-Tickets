@@ -23,26 +23,26 @@
  */
 
 define('support_tickets', "Support Tickets");
-define('ticket_subject', "Subject");
+define('ticket_subject', "Thema");
 define('ticket_status', "Status");
-define('ticket_updated', "Last Updated");
-define('ticket_options', "Options");
-define('viewing_ticket', "Viewing Ticket");
-define('ticket_not_found', "The given ticket parameters don't match an existing ticket.");
-define('ticket_cant_read', "Insufficient permission to view ticket.");
-define('cant_view_ticket', "Unable to retrieve the ticket information.");
+define('ticket_updated', "Zuletzt aktualisiert");
+define('ticket_options', "Optionen");
+define('viewing_ticket', "Ticket ansehen");
+define('ticket_not_found', "Die angegebenen Ticketparameter stimmen nicht mit einem vorhandenen Ticket überein.");
+define('ticket_cant_read', "Unzureichende Rechte um das Ticket anzuschauen");
+define('cant_view_ticket', "Die Ticketinformationen konnten nicht abgerufen werden.");
 define('ticket_id', "Ticket ID");
 define('service_id', "Service ID");
-define('ticket_submitted', "Ticket Submitted");
+define('ticket_submitted', "Ticket abgeschickt");
 define('submitter_info', "Submitter Info");
 define('name', "Name");
 define('ip', "IP");
 define('role', "User Role");
 define('ticket_submit_response', "Submit Response");
-define('ticket_close', "Close");
+define('ticket_close', "Schließen");
 define('no_ticket_replies', "No Ticket Replies");
 define('no_tickets_submitted', "No Tickets have been submitted.");
-define('submit_ticket', "Submit Ticket");
+define('submit_ticket', "Ticket abschicken");
 define('ticket_service', "Service");
 define('ticket_message', "Message");
 define('ticket_errors_occured', "The following errors occured when submitting your ticket");
