@@ -91,7 +91,6 @@ define('attachment_too_large', "%s (%s) is larger than the maximum allowed size 
 define('attachment_forbidden_type', "The file type of %s may not be uploaded.");
 define('attachment_directory_not_writable', "Unable to save the attached files. The specified save directory is not writable.");
 define('attachment_invalid_file_count', "The amount of files sent to the server was invalid. Only a maximum of %s may be uploaded");
-define('ticket_settings', "Ticket Settings");
 define('ratings_enabled', "Ratings");
 define('ratings_enabled_info', "Set if rating responses should be allowed.");
 define('attachments_enabled', "Attachments");
